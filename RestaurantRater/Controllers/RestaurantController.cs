@@ -1,6 +1,7 @@
 ﻿using RestaurantRater.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -32,13 +33,40 @@ namespace RestaurantRater.Controllers
              await _context.SaveChangesAsync();
 
                 //returning the HttpActionResult "Ok"
-                //Ok and BadRequest come from the ApiController that we are inheriting from
+                //Ok, BadRequest, NotFound, etc come from the ApiController that we are inheriting from
                 return Ok();
             }
 
                //if the model is not ok, we are returning "BadRequest" and we are including all the ModelState errors.
-               //Ok and BadRequest come from the ApiController that we are inheriting from
+                //Ok, BadRequest, NotFound, etc come from the ApiController that we are inheriting from
             return BadRequest(ModelState);
         }
+
+        //GET ALL
+        public async Task<IHttpActionResult> GetAll()
+        {                                                                //when we use the Async, we must put "await at the beginning
+            List<Restaurant> allRestaurants = await _context.Restaurants.ToListAsync();
+            {
+                return Ok(allRestaurants);
+            }
+        }
+
+        //GET BY ID
+        public async Task<IHttpActionResult> GetById(int id)
+        {
+                                              //referencing our collection of restaurants (when we use the Async, we must put "await at the beginning"
+            Restaurant restaurant = await _context.Restaurants.FindAsync(id);
+
+            if (restaurant == null)
+            {
+                //Ok, BadRequest, NotFound, etc come from the ApiController that we are inheriting from
+                return NotFound();
+            }
+            return Ok(restaurant);
+        }
+
+        //PUT (Update)
+
+        //DELETE BY ID
     }
 }
