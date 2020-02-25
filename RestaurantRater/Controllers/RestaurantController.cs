@@ -18,6 +18,7 @@ namespace RestaurantRater.Controllers
 
 
         //POST
+        [HttpPost]
             //As soon as we call this method the first time, it will scaffold out our database for us
         public async Task<IHttpActionResult> PostRestaurant(Restaurant restaurant)
         {
@@ -43,6 +44,7 @@ namespace RestaurantRater.Controllers
         }
 
         //GET ALL
+        [HttpGet]
         public async Task<IHttpActionResult> GetAll()
         {                                                                //when we use the Async, we must put "await at the beginning
             List<Restaurant> allRestaurants = await _context.Restaurants.ToListAsync();
@@ -52,6 +54,7 @@ namespace RestaurantRater.Controllers
         }
 
         //GET BY ID
+        [HttpGet]
         public async Task<IHttpActionResult> GetById(int id)
         {
                                               //referencing our collection of restaurants (when we use the Async, we must put "await at the beginning"
@@ -66,6 +69,28 @@ namespace RestaurantRater.Controllers
         }
 
         //PUT (Update)
+        [HttpPut]
+        public async Task<IHttpActionResult> UpdateRestaurant([FromUri]int id, [FromBody]Restaurant model)
+        {
+            if(ModelState.IsValid && model != null)
+            {
+                Restaurant restaurant = await _context.Restaurants.FindAsync(id);
+
+                if (restaurant != null)
+                {
+                    restaurant.Name = model.Name;
+                    restaurant.Rating = model.Rating;
+                    restaurant.Style = model.Style;
+                    restaurant.DollarSigns = model.DollarSigns;
+
+                    await _context.SaveChangesAsync();
+
+                    return Ok();
+                }
+                return NotFound();
+            }
+            return BadRequest(ModelState);
+        }
 
         //DELETE BY ID
     }
